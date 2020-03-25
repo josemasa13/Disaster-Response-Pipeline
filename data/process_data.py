@@ -5,6 +5,19 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Summary line
+    
+    Loads messages and categories datasets to merge them
+    
+    Parameters:
+    messages_filepath(string): Relative path to the messages dataset
+    categories_filepath(string) Relative path to the categories dataset
+    
+    Returns:
+    df(DataFrame): Pandas dataframe containing datasets merged
+    
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.merge(categories, how="left", on="id")
@@ -12,6 +25,17 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Summary line
+    
+    Cleans the original dataframe based on specific rules
+    
+    Parameters:
+    df(DataFrame): Pandas dataframe returned by the load_data function
+    
+    Returns:
+    df(DataFrame): Pandas dataframe with it's data ready to feed a machine learning algorithm
+    """
     # Split categories into separate category columns
     categories = df["categories"].str.split(";", expand=True)
 
@@ -40,12 +64,35 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    Summary line
+    
+    Stores the dataframe passed as parameter into the current directory as a database file
+    
+    Parameters:
+    df(DataFrame): Pandas dataframe to be stored as a file
+    database_filename(string): Name for the database file
+    
+    """
     engine = create_engine("sqlite:///" + database_filename)
     df.to_sql('Message', engine, index=False)
     pass  
 
 
 def main():
+    """
+    Summary line
+    
+    Orchestrates the calls to previous functions to complete the ETL pipeline
+    from extracting the data until loading it in a database file
+    
+    Parameters:
+    None
+    
+    Returns: 
+    None
+    
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
