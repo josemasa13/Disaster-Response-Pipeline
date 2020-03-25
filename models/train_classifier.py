@@ -19,14 +19,45 @@ nltk.download('wordnet') # download for lemmatization
 nltk.download('punkt')
 
 def load_data(database_filepath):
+    """
+    Summary line
+    
+    Loads data from a database file to pandas DataFrame and splits it into
+    feature and target variables
+    
+    Parameters:
+    database_filepath(string): path in which the database file is located
+    
+    Returns:
+    X(numpy array): Numpy array with the messages
+    
+    Y(numpy array): Numpy array of arrays with target values
+    
+    target_names(Index): Pandas Index with the target variables column names
+    
+    """
     engine = create_engine("sqlite:///" + database_filepath)
     df = pd.read_sql_table("Message", engine)
     X = df['message'].values
     Y = df.drop(columns=["id", "message", "original", "genre"]).values
-    return X, Y, df.drop(columns=["id", "message", "original", "genre"]).columns
+    target_names = df.drop(columns=["id", "message", "original", "genre"]).columns
+    return X, Y, column_names
 
 
 def tokenize(text):
+    """
+    Summary line
+    
+    tokenize function to split sentences into words, remove stop words
+    and lemmatize them as part of the NLP pipeline
+    
+    Parameters:
+    text(string): String to be tokenized
+    
+    Returns:
+    clean_tokens(list): List of tokens derived from the text parameter
+
+    """
     # Cleaning the text from punctuation and converting it all to lower case
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     tokens = nltk.word_tokenize(text)
@@ -47,6 +78,19 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Summary line:
+    
+    Builds a machine learning model using a pipeline
+    
+    Parameters:
+    None
+    
+    Returns:
+    pipeline(Pipeline): Scikit learn's pipeline with the steps to fit a machine
+    learning model
+    
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf',TfidfTransformer()),
@@ -56,6 +100,28 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Summary line:
+    
+    Predicts a new set of inputs with a model and evaluates
+    these predictions using Scikit learn's classification
+    report
+    
+    Parameters:
+    model(Pipeline): Scikit learn's trained pipeline model
+    
+    X_test(numpy array): Numpy array with the test subset of the 
+    X(feature values) numpy array returned by the load_data function
+    
+    Y_test(numpy array): Numpy array with the test subset of the 
+    Y(target values) numpy array returned by the load_data function
+    
+    category_names(Index): Pandas index with the column names for the
+    target variables
+    
+    Returns:
+    None
+    """
     Y_pred = model.predict(X_test)
     for i in range(0,len(category_names)):
         curr_test = [y[i] for y in Y_test]
@@ -67,11 +133,33 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    Summary line:
+    
+    Saves a trained machine learning model into a pickle file
+    
+    Parameters:
+    model(Pipeline): Scikit learn's pipeline trained model
+    
+    model_filepath(string): Path in which the pickle file will be stored
+    """
     pickle.dump(model, open(model_filepath, "wb"))
     
 
 
 def main():
+    """
+    Summary line
+    
+    Orchestrates the calls to previous functions to execute the machine learning pipeline
+    
+    Parameters:
+    None
+    
+    Returns: 
+    None
+    
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
