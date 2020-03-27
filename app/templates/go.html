@@ -3,22 +3,29 @@
 
 {% block message %}
     <hr />
-    <h4 class="text-center">MESSAGE</h4>
-    <p class="text-center"><i>{{query}}</i></p>
+    <h4 style="color:white" class="text-center">MESSAGE</h4>
+    <p style="color: white; background-color: black; "class="text-center"><i>{{query}}</i></p>
+    <br>
+    <br>
+    <p style="color: white; background-color: black; "class="text-center"><i>Please scroll down to see categories</i></p>
 {% endblock %}
 
 {% block content %}
+
     <h1 class="text-center">Result</h1>
-        <ul class="list-group">
+        <div class="btn-group" role="group" aria-label="Basic example">
             {% for category, classification in classification_result.items() %}
                 {% if classification == 1 %}
-                    <li class="list-group-item list-group-item-success text-center">{{category.replace('_', ' ').title()}}</li>
+                    <button type="button" class="btn btn-success">{{category.replace('_', ' ').title()}}</button>
                 {% else %}
-                    <li class="list-group-item list-group-item-dark text-center">{{category.replace('_', ' ').title()}}</li>
+                    <button type="button" class="btn btn-secondary">{{category.replace('_', ' ').title()}}</button>
                 {% endif %}
             {% endfor %}
-
         </div>
-    </div>
+        <br>
+        <br>
+        <br>
+        
+
 
 {% endblock %}

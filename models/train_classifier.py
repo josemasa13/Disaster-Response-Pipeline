@@ -41,7 +41,7 @@ def load_data(database_filepath):
     X = df['message'].values
     Y = df.drop(columns=["id", "message", "original", "genre"]).values
     target_names = df.drop(columns=["id", "message", "original", "genre"]).columns
-    return X, Y, column_names
+    return X, Y, target_names
 
 
 def tokenize(text):
